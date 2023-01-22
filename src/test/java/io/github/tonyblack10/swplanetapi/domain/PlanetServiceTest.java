@@ -4,6 +4,8 @@ import static io.github.tonyblack10.swplanetapi.common.PlanetConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -38,6 +40,27 @@ public class PlanetServiceTest {
 
         assertThatThrownBy(() -> planetService.create(INVALID_PLANET))
                 .isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    public void getPlanet_ByExistingId_ReturnsPlanet() {
+        Mockito.when(planetRepository.findById(1L))
+                .thenReturn(Optional.of(PLANET));
+
+        var sut = planetService.get(1L);
+
+        assertThat(sut).isNotEmpty();
+        assertThat(sut.get()).isEqualTo(PLANET);
+    }
+
+    @Test
+    public void getPlanet_ByUnexistingId_ReturnsEmpty() {
+        Mockito.when(planetRepository.findById(1L))
+                .thenReturn(Optional.empty());
+
+        var sut = planetService.get(1L);
+
+        assertThat(sut).isEmpty();
     }
 
 }
