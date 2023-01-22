@@ -2,6 +2,7 @@ package io.github.tonyblack10.swplanetapi.domain;
 
 import static io.github.tonyblack10.swplanetapi.common.PlanetConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.ArrayList;
@@ -116,5 +117,18 @@ public class PlanetServiceTest {
         var sut = planetService.list(PLANET.getTerrain(), PLANET.getClimate());
 
         assertThat(sut).isEmpty();
+    }
+
+    @Test
+    public void removePlanet_WithExistingId_doesNotThrowAnyException() {
+        assertThatCode(() -> planetService.remove(1L)).doesNotThrowAnyException();
+    }
+
+    @Test
+    public void removePlanet_WithUnexistingId_ThrowsException() {
+        Mockito.doThrow(new RuntimeException())
+                .when(planetRepository).deleteById(99L);
+
+        assertThatThrownBy(() -> planetService.remove(99L)).isInstanceOf(RuntimeException.class);
     }
 }
