@@ -2,6 +2,7 @@ package io.github.tonyblack10.swplanetapi.domain;
 
 import static io.github.tonyblack10.swplanetapi.common.PlanetConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,15 @@ public class PlanetServiceTest {
         var sut = planetService.create(PLANET);
 
         assertThat(sut).isEqualTo(PLANET);
+    }
+
+    @Test
+    public void createPlanet_WithInvalidData_ThrowsException() {
+        Mockito.when(planetRepository.save(INVALID_PLANET))
+                .thenThrow(RuntimeException.class);
+
+        assertThatThrownBy(() -> planetService.create(INVALID_PLANET))
+                .isInstanceOf(RuntimeException.class);
     }
 
 }
