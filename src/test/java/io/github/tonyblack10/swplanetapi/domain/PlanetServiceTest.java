@@ -63,4 +63,26 @@ public class PlanetServiceTest {
         assertThat(sut).isEmpty();
     }
 
+    @Test
+    public void getPlanet_ByExistingName_ReturnsPlanet() {
+        Mockito.when(planetRepository.findByName(PLANET.getName()))
+                .thenReturn(Optional.of(PLANET));
+
+        var sut = planetService.getByName(PLANET.getName());
+
+        assertThat(sut).isNotEmpty();
+        assertThat(sut.get()).isEqualTo(PLANET);
+    }
+
+    @Test
+    public void getPlanet_ByUnexistingName_ReturnsEmpty() {
+        var name = "Unexisting name";
+        Mockito.when(planetRepository.findByName(name))
+                .thenReturn(Optional.empty());
+
+        var sut = planetService.getByName(name);
+
+        assertThat(sut).isEmpty();
+    }
+
 }
