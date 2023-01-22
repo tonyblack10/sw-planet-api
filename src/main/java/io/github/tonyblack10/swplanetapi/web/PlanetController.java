@@ -1,5 +1,7 @@
 package io.github.tonyblack10.swplanetapi.web;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.github.tonyblack10.swplanetapi.domain.Planet;
@@ -39,6 +42,13 @@ public class PlanetController {
     public ResponseEntity<Planet> getByName(@PathVariable("name") String name) {
         return planetService.getByName(name).map(planet -> ResponseEntity.ok(planet))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    public ResponseEntity<List<Planet>> list(@RequestParam(required = false) String terrain,
+            @RequestParam(required = false) String climate) {
+        List<Planet> planets = planetService.list(terrain, climate);
+        return ResponseEntity.ok(planets);
     }
 
 }

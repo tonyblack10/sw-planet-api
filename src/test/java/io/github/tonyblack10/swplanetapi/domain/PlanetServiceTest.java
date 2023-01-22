@@ -4,6 +4,9 @@ import static io.github.tonyblack10.swplanetapi.common.PlanetConstants.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -85,4 +88,33 @@ public class PlanetServiceTest {
         assertThat(sut).isEmpty();
     }
 
+    @Test
+    public void listPlanets_ReturnsAllPlanets() {
+        List<Planet> planets = new ArrayList<>() {
+            {
+                add(PLANET);
+            }
+        };
+
+        var query = QueryBuilder.makeQuery(new Planet(PLANET.getClimate(), PLANET.getTerrain()));
+
+        Mockito.when(planetRepository.findAll(query))
+                .thenReturn(planets);
+
+        var sut = planetService.list(PLANET.getTerrain(), PLANET.getClimate());
+
+        assertThat(sut).isNotEmpty();
+        assertThat(sut).hasSize(1);
+        assertThat(sut.get(0)).isEqualTo(PLANET);
+    }
+
+    @Test
+    public void listPlanets_ReturnsNoPlanets() {
+        Mockito.when(planetRepository.findAll(Mockito.any()))
+                .thenReturn(Collections.emptyList());
+
+        var sut = planetService.list(PLANET.getTerrain(), PLANET.getClimate());
+
+        assertThat(sut).isEmpty();
+    }
 }
