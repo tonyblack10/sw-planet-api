@@ -4,7 +4,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static io.github.tonyblack10.swplanetapi.common.PlanetConstants.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.hasSize;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -110,4 +113,33 @@ public class PlanetControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    public void listPlanets_ReturnsFilteredPlanets() throws Exception {
+        Mockito.when(planetService.list(null, null))
+                .thenReturn(PLANETS);
+        Mockito.when(planetService.list(TATOOINE.getTerrain(), TATOOINE.getClimate()))
+                .thenReturn(List.of(TATOOINE));
+
+        mockMvc.perform(
+                get("/planets"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(3)));
+
+        mockMvc.perform(
+                get("/planets?" + String.format("terrain=%s&climate=%s", TATOOINE.getTerrain(), TATOOINE.getClimate())))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0]").value(TATOOINE));
+    }
+
+    @Test
+    public void listPlanets_ReturnsNoPlanets() throws Exception {
+        Mockito.when(planetService.list(null, null))
+                .thenReturn(Collections.emptyList());
+
+        mockMvc.perform(
+                get("/planets"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));
+    }
 }

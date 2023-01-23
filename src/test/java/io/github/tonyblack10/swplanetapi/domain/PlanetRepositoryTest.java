@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.test.context.jdbc.Sql;
 
 // @SpringBootTest(classes = { PlanetRepository.class })
 @DataJpaTest
@@ -86,5 +87,30 @@ public class PlanetRepositoryTest {
         var planetOptional = planetRepository.findByName("name");
 
         assertThat(planetOptional).isEmpty();
+    }
+
+    @Sql(scripts = "/import_planets.sql")
+    @Test
+    public void listPlanets_ReturnsFilteredPlanets() {
+        var queryWithoutFilters = QueryBuilder.makeQuery(new Planet());
+        var queryWithFilters = QueryBuilder.makeQuery(new Planet(TATOOINE.getClimate(), TATOOINE.getTerrain()));
+
+        var responseWithoutFilters = planetRepository.findAll(queryWithoutFilters);
+        var responseWithFilters = planetRepository.findAll(queryWithFilters);
+
+        assertThat(responseWithoutFilters).isNotEmpty();
+        assertThat(responseWithoutFilters).hasSize(3);
+        assertThat(responseWithFilters).isNotEmpty();
+        assertThat(responseWithFilters).hasSize(1);
+        assertThat(responseWithFilters.get(0)).isEqualTo(TATOOINE);
+    }
+
+    @Test
+    public void listPlanets_ReturnsNoPlanets() {
+        var query = QueryBuilder.makeQuery(new Planet());
+
+        var response = planetRepository.findAll(query);
+
+        assertThat(response).isEmpty();
     }
 }
