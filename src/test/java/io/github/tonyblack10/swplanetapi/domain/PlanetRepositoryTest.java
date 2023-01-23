@@ -8,6 +8,7 @@ import static org.assertj.core.api.Assertions.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.test.context.jdbc.Sql;
 
 // @SpringBootTest(classes = { PlanetRepository.class })
@@ -112,5 +113,21 @@ public class PlanetRepositoryTest {
         var response = planetRepository.findAll(query);
 
         assertThat(response).isEmpty();
+    }
+
+    @Test
+    public void removePlanet_WithExistingId_RemovesPlanetFromDatabase() {
+        var planet = testEntityManager.persistFlushFind(PLANET);
+
+        planetRepository.deleteById(planet.getId());
+
+        var removedPlanet = testEntityManager.find(Planet.class, planet.getId());
+
+        assertThat(removedPlanet).isNull();
+    }
+
+    @Test
+    public void removePlanet_WithUnexistingId_ThrowsException() {
+        assertThatThrownBy(() -> planetRepository.deleteById(1L)).isInstanceOf(EmptyResultDataAccessException.class);
     }
 }
