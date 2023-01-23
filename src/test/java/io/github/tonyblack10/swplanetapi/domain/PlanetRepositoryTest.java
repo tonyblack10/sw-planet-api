@@ -1,6 +1,8 @@
 package io.github.tonyblack10.swplanetapi.domain;
 
 import static io.github.tonyblack10.swplanetapi.common.PlanetConstants.*;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,11 @@ public class PlanetRepositoryTest {
 
     @Autowired
     private TestEntityManager testEntityManager;
+
+    @BeforeEach
+    public void init() {
+        PLANET.setId(null);
+    }
 
     @Test
     public void createPlanet_WithValidData_ReturnsPLanet() {
@@ -45,5 +52,22 @@ public class PlanetRepositoryTest {
         planet.setId(null);
 
         assertThatThrownBy(() -> planetRepository.save(planet)).isInstanceOf(RuntimeException.class);
+    }
+
+    @Test
+    public void getPlanet_ByExistingId_ReturnsPlanet() {
+        var planet = testEntityManager.persistFlushFind(PLANET);
+
+        var planetOptional = planetRepository.findById(planet.getId());
+
+        assertThat(planetOptional).isNotEmpty();
+        assertThat(planetOptional.get()).isEqualTo(planet);
+    }
+
+    @Test
+    public void getPlanet_ByUnexistingId_ReturnsEmpty() {
+        var planetOptional = planetRepository.findById(1L);
+
+        assertThat(planetOptional).isEmpty();
     }
 }
