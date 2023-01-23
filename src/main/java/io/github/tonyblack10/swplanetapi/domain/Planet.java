@@ -2,6 +2,7 @@ package io.github.tonyblack10.swplanetapi.domain;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
+import io.github.tonyblack10.swplanetapi.jacoco.ExcludeFromJacocoGeneratedReport;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -88,6 +89,7 @@ public class Planet {
         return EqualsBuilder.reflectionEquals(obj, this);
     }
 
+    @ExcludeFromJacocoGeneratedReport
     @Override
     public String toString() {
         return "Planet [climate=" + climate + ", id=" + id + ", name=" + name + ", terrain=" + terrain + "]";
