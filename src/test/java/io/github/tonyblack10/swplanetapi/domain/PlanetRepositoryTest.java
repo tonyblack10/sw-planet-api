@@ -29,4 +29,13 @@ public class PlanetRepositoryTest {
         assertThat(sut.getClimate()).isEqualTo(PLANET.getClimate());
         assertThat(sut.getTerrain()).isEqualTo(PLANET.getTerrain());
     }
+
+    @Test
+    public void createPlanet_WithInvalidData_ThrowsException() {
+        var emptyPlanet = new Planet();
+        var invalidPlanet = new Planet("", "", "");
+
+        assertThatThrownBy(() -> planetRepository.save(emptyPlanet)).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> planetRepository.save(invalidPlanet)).isInstanceOf(RuntimeException.class);
+    }
 }
