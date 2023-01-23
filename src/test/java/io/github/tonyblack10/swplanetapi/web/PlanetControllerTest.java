@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.github.tonyblack10.swplanetapi.domain.Planet;
 import io.github.tonyblack10.swplanetapi.domain.PlanetService;
 
 @WebMvcTest(PlanetController.class)
@@ -39,6 +40,18 @@ public class PlanetControllerTest {
         mockMvc.perform(post("/planets").content(planetJson).contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$").value(PLANET));
+    }
+
+    @Test
+    public void createPlanet_WithInvalidData_ReturnsBadRequest() throws Exception {
+        var emptyPlanet = objectMapper.writeValueAsString(new Planet());
+        var invalidPlanet = objectMapper.writeValueAsString(new Planet("", "", ""));
+
+        mockMvc.perform(post("/planets").content(emptyPlanet).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnprocessableEntity());
+
+        mockMvc.perform(post("/planets").content(invalidPlanet).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isUnprocessableEntity());
     }
 
 }
