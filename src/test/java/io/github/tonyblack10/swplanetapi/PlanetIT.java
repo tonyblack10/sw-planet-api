@@ -18,6 +18,7 @@ import io.github.tonyblack10.swplanetapi.domain.Planet;
 @ActiveProfiles("it")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @Sql(scripts = { "/remove_planets.sql" }, executionPhase = ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = { "/import_planets.sql" }, executionPhase = ExecutionPhase.BEFORE_TEST_METHOD)
 public class PlanetIT {
 
     @Autowired
@@ -32,6 +33,14 @@ public class PlanetIT {
         assertThat(sut.getBody().getName()).isEqualTo(PLANET.getName());
         assertThat(sut.getBody().getClimate()).isEqualTo(PLANET.getClimate());
         assertThat(sut.getBody().getTerrain()).isEqualTo(PLANET.getTerrain());
+    }
+
+    @Test
+    public void getPlanet_ReturnsPlanet() {
+        var sut = restTemplate.getForEntity("/planets/1", Planet.class);
+
+        assertThat(sut.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(sut.getBody()).isEqualTo(TATOOINE);
     }
 
 }
