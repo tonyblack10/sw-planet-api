@@ -91,4 +91,23 @@ public class PlanetControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @Test
+    public void getPlanet_ByExistingName_ReturnsPlanet() throws Exception {
+        Mockito.when(planetService.getByName(PLANET.getName()))
+                .thenReturn(Optional.of(PLANET));
+
+        mockMvc.perform(
+                get("/planets/name/" + PLANET.getName()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value(PLANET));
+    }
+
+    @Test
+    public void getPlanet_ByUnexistingName_ReturnsNotFound() throws Exception {
+        mockMvc.perform(
+                get("/planets/name/x")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
 }
