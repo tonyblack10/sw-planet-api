@@ -1,8 +1,6 @@
 spring:
   datasource:
-    username: ${MYSQL_USERNAME:root}
-    url: ${MYSQL_HOST:jdbc:mysql://localhost:3306/starwars?createDatabaseIfNotExist=true&serverTimezone=UTC}
-    password: ${MYSQL_PASSWORD:mysql123}
+    url: jdbc:tc:mysql:8.0:///db?TC_IMAGE_TAG=8.0
   jpa:
     hibernate:
       ddl-auto: update
